@@ -1,1 +1,13 @@
-/* You can add global styles to this file, and also import other style files */
+/* sitio responsive */
+gallery {
+    visibility: grid;
+    gap: 1 rem;
+    grid-auto-rows: 22rem;
+    grid-template-columns: repeat (auto-fit, minmax(15rem, 1fr));
+    }
+    
+    featured {
+    grid-column: span 2;
+    }
+
+    

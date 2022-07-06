@@ -1,0 +1,39 @@
+<header>
+    <div class="programa">
+        <a href="https://argentinaprograma.inti.gob.ar/" target="_blank">
+            <img class="logo" src="./assets/imagenes/Argentina Programa Logo.png"> Argentina Programa - <strong>
+                #YoProgramo</strong>
+        </a>
+        <div id="net-log">
+            <a href="https://www.linkedin.com/in/noelia-salvio-a2586022/" target="_blank">
+                <fa-icon [icon]="faLinkedin" size="lg"></fa-icon>
+            </a>
+            <a href="https://github.com/nsalvio" target="_blank">
+                <fa-icon [icon]="faGithub" size="lg"></fa-icon>
+            </a>
+            <button><i class="fas fa-sign-in-alt"></i>Login</button>
+
+
+        </div>
+    </div>
+</header>
+<section id="perfil">
+    <div class="profile-header">
+        <div class="profile-banner">
+            <img class="banner" src="fondo">
+            <div class="profile-img">
+                <img class="image" src="{{persona?.fotoPerfil}}"
+                    style="width: 100%;; border-radius: 50%;">
+                <div class="button-edit"><a href="" class="btn-image"><i class="fas fa-pencil-alt"></i></a></div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="profile-data">
+        <div class="bio">
+            <div *ngIf="persona">
+                <h3 class="nombre">{{persona.nombre}} {{persona.apellido}}</h3>
+                <h4 class="titulo">{{persona.titulo}}</h4>
+                <a class="fas fa-map-marker-alt">{{persona.provinciaYPais}}</a>
+            </div>
+        </div>

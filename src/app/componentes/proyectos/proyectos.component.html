@@ -1,0 +1,32 @@
+<div>
+    <h2>Proyectos
+        <span style="font-size: 1.5rem;">
+            <fa-icon [icon]="faPlus"(click)="open('addProyecto')">
+                <div>Open confirm modal</div>
+                <div class="text-dark" aria-hidden="true"><small>&times; button will be focused</small></div>>
+            </fa-icon>
+        </span>
+    </h2>
+</div>
+<div class="container">
+    <div class="row" *ngFor="let proyecto of proyectos">
+        <div class="col">
+            <p>
+                {{proyecto.nombreDelProyecto}}
+            </p>
+        </div>         
+            <div class="row">
+                <div class="col">
+                   <fa-icon [icon]="faEdit" (click)="open('editProyecto', proyecto.idProyecto)">
+                        <div>Open confirm modal</div>
+                        <div class="text-dark" aria-hidden="true"><small>&times; button will be focused</small></div>>
+                    </fa-icon>
+
+                    <fa-icon [icon]="faTrash" (click)="open('deleteProyecto', proyecto.idProyecto)">
+                        <div>Open confirm modal</div>
+                        <div class="text-dark" aria-hidden="true"><small>&times; button will be focused</small></div>>
+                    </fa-icon>
+                </div>
+            </div>
+        </div>
+    </div>           
