@@ -1,11 +1,13 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit, Type } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, Type } from '@angular/core';
 import { faEdit, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Educacion } from 'src/app/models/educacion';
 import { Experiencia } from 'src/app/models/experiencia';
 import { EducacionService } from 'src/app/servicios/educacion.service';
 import { ExperienciaService } from 'src/app/servicios/experiencia.service';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { ThisReceiver } from '@angular/compiler';
 
 
 @Component({
@@ -22,7 +24,7 @@ export class ExperienciaYEducacionComponent implements OnInit {
   public experiencias: Experiencia[] = [];
   private idPersona = 13;
 
-  constructor(private educacionService: EducacionService, private experienciaService: ExperienciaService, private _modalService: NgbModal) { }
+  constructor(private educacionService: EducacionService, private experienciaService: ExperienciaService, private _modalService: NgbModal, private _cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     this.getEducacion();
@@ -33,6 +35,7 @@ export class ExperienciaYEducacionComponent implements OnInit {
     this.educacionService.getEducaciones(this.idPersona).subscribe({
       next: (Response: Educacion[]) => {
         this.educaciones = Response;
+        this._cdr.detectChanges();
       },
       error: (error: HttpErrorResponse) => {
         alert(error.message);
@@ -44,6 +47,7 @@ export class ExperienciaYEducacionComponent implements OnInit {
     this.experienciaService.getExperiencias(this.idPersona).subscribe({
       next: (Response: Experiencia[]) => {
         this.experiencias = Response;
+        this._cdr.detectChanges();
       },
       error: (error: HttpErrorResponse) => {
         alert(error.message);
@@ -56,9 +60,11 @@ export class ExperienciaYEducacionComponent implements OnInit {
       size: "xl"
     });
     modal.componentInstance.id = id;
+    modal.componentInstance.caller = this;
     }
 }
 
+//modal para borrar experiencia
 @Component({
   selector: 'ngbd-modal-delete-experiencia',
   template: `
@@ -78,16 +84,28 @@ export class ExperienciaYEducacionComponent implements OnInit {
 })
 export class NgbdModalDeleteExperiencia {
   public id?: number;
+  public idPersona = 13;
+  public caller?: ExperienciaYEducacionComponent;
 
-  constructor(public modal: NgbActiveModal) {}
+  constructor(public modal: NgbActiveModal, private experienciaService: ExperienciaService) {}
 
   delete(){
-    alert('borrar');
+
+    if (this.id) {
+      this.experienciaService.deleteExperiencia(this.idPersona, this.id).subscribe({
+        next: () => {
+          this.caller && this.caller.getExperiencia(); //CHANGE DETECTOR//
+        },
+        error: (error: HttpErrorResponse) => {
+          alert(error.message);
+        }
+      });
+    }
     this.modal.close('Ok click');
   }
 }
 
-
+//modal para borrar educación
 @Component({
   selector: 'ngbd-modal-delete-educacion',
   template: `
@@ -107,18 +125,30 @@ export class NgbdModalDeleteExperiencia {
 })
 export class NgbdModalDeleteEducacion {
   public id?: number;
+  public idPersona = 13;
+  public caller?: ExperienciaYEducacionComponent;
 
-  constructor(public modal: NgbActiveModal) {}
+  constructor(public modal: NgbActiveModal, private educacionService: EducacionService) {}
 
   delete(){
-    alert('borrar');
-    this.modal.close('Ok click');
+    if (this.id) {
+      this.educacionService.deleteEducacion(this.idPersona, this.id).subscribe({
+        next: () => {
+          this.caller && this.caller.getEducacion(); //CHANGE DETECTOR//
+        },
+        error: (error: HttpErrorResponse) => {
+          alert(error.message);
+        }
+      });
+    }    this.modal.close('Ok click');
   }
 }
 
+//modal para editar educación
 @Component({
   selector: 'ngbd-modal-edit-educacion',
-  template: `
+  template: `    
+<form [formGroup]="form" class="m-5" (ngSubmit)="edit()">
       <div class="modal-header">
         <h4 class="modal-title" id="modal-title">{{id ? "Editar" : "Agregar"}} Educacion {{id}}</h4>
         <button type="button" class="btn-close" aria-describedby="modal-title" (click)="modal.dismiss('Cross click')"></button>
@@ -128,52 +158,71 @@ export class NgbdModalDeleteEducacion {
           <div class="col-md-3">
         <label>Carrera</label>
       </div>
-          <div class="col-6" style="margin-bottom: 10px;"><input type="text" style="width: 100%" [value]="educacion?.carrera">
-         </div>
+          <div class="col-6" style="margin-bottom: 10px;">
+          <input type="text" style="width: 100%" formControlName="name">
+        </div>
         </div>
         <div class="row">
           <div class="col-md-3">
         <label>Instituto</label>
       </div>
-          <div class="col-6"  style="margin-bottom: 10px"><input type="text" style="width: 100%" [value]="educacion?.instituto">
+          <div class="col-6"  style="margin-bottom: 10px">
+          <input type="text" style="width: 100%" formControlName="institute">
         </div>
         </div>
         <div class="row">
           <div class="col-md-3">
         <label>¿Cursa actualmente?</label>
       </div>
-          <div class="col-6"  style="margin-bottom: 10px"><input type="text" style="width: 100%" [value]="educacion?.estudiaActualmente">
-                </div>
+          <div class="col-6"  style="margin-bottom: 10px">
+          <input type="checkbox" style="width: 100%" formControlName="actual">
+          </div>
         </div>
     <div class="row">
           <div class="col-md-3">
         <label>Fecha Inicio</label>
       </div>
-          <div class="col-6" style="margin-bottom: 10px"><input type="date" style="width: 100%" [value]="educacion?.fechaInicio">
+          <div class="col-6" style="margin-bottom: 10px">
+          <input type="date" style="width: 100%" formControlName="date">
         </div>
       </div>
       <div class="row">
           <div class="col-md-3">
         <label>Fecha Fin</label>
       </div>
-          <div class="col-6" style="margin-bottom: 10px"><input type="date" style="width: 100%" [value]="educacion?.fechaFin">
+          <div class="col-6" style="margin-bottom: 10px">
+          <input type="date" style="width: 100%" formControlName="datend">
         </div>
       </div>
-      
     </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancelar</button>
-        <button type="button" class="btn btn-danger" (click)="edit()">Guardar</button>
+        <button type="submit" class="btn btn-danger" (submit)="edit">Guardar</button>
       </div>
-      `
+</form>  `
+
 })
 export class NgbdModalEditEducacion {
   public id?: number;
-
   public educacion?: Educacion;
   private idPersona = 13;
+  
 
-  constructor(public modal: NgbActiveModal, private educacionService: EducacionService) { }
+  public caller?:ExperienciaYEducacionComponent;
+
+  form: FormGroup;
+
+  constructor(public modal: NgbActiveModal, private educacionService: EducacionService, private formBuilder: FormBuilder) { 
+    this.form = this.formBuilder.group(
+    {
+      name: [``, [Validators.required]],
+      actual: [``, [Validators.required]],
+      institute: [``, [Validators.required]],
+      date: [``, [Validators.required]],
+      datend: [``, [Validators.required]]
+    }
+  )
+}
 
   ngOnInit(): void {
     this.getEducacion();
@@ -184,6 +233,13 @@ export class NgbdModalEditEducacion {
       this.educacionService.getEducacion(this.idPersona, this.id).subscribe({
         next: (Response: Educacion) => {
           this.educacion = Response;
+          this.form.setValue({
+            name: this.educacion?.carrera,
+            actual: this.educacion?.estudiaActualmente,
+            institute: this.educacion?.instituto,
+            date: this.educacion?.fechaInicio,
+            datend: this.educacion?.fechaFin,
+          });
         },
         error: (error: HttpErrorResponse) => {
           alert(error.message);
@@ -191,14 +247,56 @@ export class NgbdModalEditEducacion {
       });
   }
   edit() {
-    alert('borrar');
-    this.modal.close('Ok click');
+    if (this.educacion) {
+      this.educacion.carrera = this.form.get("name")?.value;      
+      this.educacion.estudiaActualmente = this.form.get("actual")?.value;
+      this.educacion.instituto = this.form.get("institute")?.value;      
+      this.educacion.fechaInicio = this.form.get("date")?.value;
+      this.educacion.fechaFin = this.form.get("datend")?.value;
+      this.educacionService.updateEducacion(this.idPersona, this.educacion).subscribe({
+        next: (Response: Educacion) => {
+          this.educacion = Response;
+          this.caller && this.caller.getEducacion();
+        },
+        error: (error: HttpErrorResponse) => {
+          alert(error.message);
+        }
+      });
+    }
+    else {
+      const educacion = {
+        carrera: this.form.get("name")?.value,
+        estudiaActualmente: this.form.get("actual")?.value,
+        instituto: this.form.get("institute")?.value,
+        fechaInicio: this.form.get("date")?.value,
+        fechaFin: this.form.get("datend")?.value,
+      };
+      this.educacionService.addEducacion(this.idPersona, educacion).subscribe({
+        next: (Response: Educacion) => {
+          this.educacion = Response;
+          this.caller && this.caller.getEducacion();
+          this.form.setValue({
+            name: this.educacion?.carrera,
+            actual: this.educacion?.estudiaActualmente,
+            institute: this.educacion?.instituto,
+            date: this.educacion?.fechaInicio,
+            datend: this.educacion?.fechaFin,
+          });
+        },
+        error: (error: HttpErrorResponse) => {
+          alert(error.message);
   }
+});
+}
+this.modal.close('Ok click');
+}
 }
 
+//modal para editar experiencia
 @Component({
   selector: 'ngbd-modal-edit-experiencia',
   template: `
+  <form [formGroup]="form" class="m-5" (ngSubmit)="edit()">
       <div class="modal-header">
         <h4 class="modal-title" id="modal-title">{{id ? "Editar" : "Agregar"}} Experiencia {{id}}</h4>
         <button type="button" class="btn-close" aria-describedby="modal-title" (click)="modal.dismiss('Cross click')"></button>
@@ -208,43 +306,49 @@ export class NgbdModalEditEducacion {
           <div class="col-md-3">
         <label>Empresa</label>
       </div>
-          <div class="col-6" style="margin-bottom: 10px; align: left;"><input type="text" style="width: 100%" [value]="experiencia?.nombreEmpresa">
+         <div class="col-6" style="margin-bottom: 10px; align: left;">
+          <input type="text" style="width: 100%" formControlName="name">
+      </div>
          </div>
-        </div>
         <div class="row">
           <div class="col-md-3">
         <label>¿Es trabajo Actual?</label>
       </div>
-          <div class="col-6"  style="margin-bottom: 10px"><input type="checkbox" [value]="experiencia?.esTrabajoActual">
+          <div class="col-6"  style="margin-bottom: 10px">
+          <input type="checkbox" style="width: 100%" formControlName="actual">
         </div>
         </div>
         <div class="row">
           <div class="col-md-3">
         <label>fecha Inicio</label>
       </div>
-          <div class="col-6"  style="margin-bottom: 10px"><input type="text" style="width: 100%" [value]="experiencia?.fechaInicio">              </div>
+          <div class="col-6"  style="margin-bottom: 10px">
+          <input type="date" style="width: 100%" formControlName="date">
         </div>
+</div>
     <div class="row">
           <div class="col-md-3">
         <label>Fecha Fin</label>
       </div>
-         <div class="col-6" style="margin-bottom: 10px"><input type="date" style="width: 100%" [value]="experiencia?.fechaFin">
+         <div class="col-6" style="margin-bottom: 10px">
+         <input type="date" sstyle="width: 100%" formControlName="datend">
         </div>
       </div>
       <div class="row">        
         <div class="col-md-3">
         <label>Experiencia</label>
       </div>
-          <div class="col-6" style="margin-bottom: 10px"><input type="date" style="width: 100%" [value]="experiencia?.descripcion">
+          <div class="col-6" style="margin-bottom: 10px">
+          <input type="text" style="width: 100%" formControlName="description">
         </div>
       </div>
-      
-    </div>
+      </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancelar</button>
-        <button type="button" class="btn btn-danger" (click)="edit()">Guardar</button>
+        <button type="submit" class="btn btn-danger" (submit)="edit">Guardar</button>
       </div>
-      `
+</form> `
+
 })
 export class NgbdModalEditExperiencia {
   public id?: number;
@@ -252,7 +356,21 @@ export class NgbdModalEditExperiencia {
   public experiencia?: Experiencia;
   private idPersona = 13;
 
-  constructor(public modal: NgbActiveModal, private experienciaService: ExperienciaService) { }
+  public caller?: ExperienciaYEducacionComponent;
+
+  form: FormGroup;
+
+  constructor(public modal: NgbActiveModal, private experienciaService: ExperienciaService, private formBuilder: FormBuilder) { 
+    this.form = this.formBuilder.group(
+      {
+        name: [``, [Validators.required]],
+        actual: [``, [Validators.required,]],
+        date: [``, [Validators.required,]],
+        datend: [``, [Validators.required,]],
+        description: [``, [Validators.required,]],
+      }
+    )
+  }
 
   ngOnInit(): void {
     this.getExperiencia();
@@ -263,6 +381,13 @@ export class NgbdModalEditExperiencia {
       this.experienciaService.getExperiencia(this.idPersona, this.id).subscribe({
         next: (Response: Experiencia) => {
           this.experiencia = Response;
+          this.form.setValue({
+            name: this.experiencia?.nombreEmpresa,
+            actual: this.experiencia?.esTrabajoActual,
+            date: this.experiencia?.fechaInicio,
+            datend: this.experiencia?.fechaFin,
+            description: this.experiencia?.descripcion,
+          });
         },
         error: (error: HttpErrorResponse) => {
           alert(error.message);
@@ -270,93 +395,57 @@ export class NgbdModalEditExperiencia {
       });
   }
   edit() {
-    alert('borrar');
-    this.modal.close('Ok click');
-  }
-}
-
-//modal para agregar educación nueva
-@Component({
-  selector: 'ngbd-modal-add-educacion',
-  template: `
-      <div class="modal-header">
-        <h4 class="modal-title" id="modal-title">Agregar Educacion {{idEducacion}}</h4>
-        <button type="button" class="btn-close" aria-describedby="modal-title" (click)="modal.dismiss('Cross click')"></button>
-      </div>
-      <div class="modal-body">
-        <div class="row">
-          <div class="col-md-3">
-        <label>Carrera</label>
-      </div>
-          <div class="col-6" style="margin-bottom: 10px;"><input type="text" style="width: 100%" [value]="educacion?.carrera">
-         </div>
-        </div>
-        <div class="row">
-          <div class="col-md-3">
-        <label>Instituto</label>
-      </div>
-          <div class="col-6"  style="margin-bottom: 10px"><input type="text" style="width: 100%" [value]="educacion?.instituto">
-        </div>
-        </div>
-        <div class="row">
-          <div class="col-md-3">
-        <label>¿Cursa actualmente?</label>
-      </div>
-          <div class="col-6"  style="margin-bottom: 10px"><input type="text" style="width: 100%" [value]="educacion?.estudiaActualmente">
-                </div>
-        </div>
-    <div class="row">
-          <div class="col-md-3">
-        <label>Fecha Inicio</label>
-      </div>
-          <div class="col-6" style="margin-bottom: 10px"><input type="date" style="width: 100%" [value]="educacion?.fechaInicio">
-        </div>
-      </div>
-      <div class="row">
-          <div class="col-md-3">
-        <label>Fecha Fin</label>
-      </div>
-          <div class="col-6" style="margin-bottom: 10px"><input type="date" style="width: 100%" [value]="educacion?.fechaFin">
-        </div>
-      </div>
-      
-    </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancelar</button>
-        <button type="button" class="btn btn-danger" (click)="edit()">Guardar</button>
-      </div>
-      `
-})
-export class NgbdModalAddEducacion {
-  public idEducacion?: number;
-
-  public educacion?: Educacion;
-  private idPersona = 13;
-
-  constructor(public modal: NgbActiveModal, private educacionService: EducacionService) { }
-
-  ngOnInit(): void {
-    this.getEducacion();
-  }
-
-  public getEducacion(): void {
-    this.idEducacion &&
-      this.educacionService.getEducacion(this.idPersona, this.idEducacion).subscribe({
-        next: (Response: Educacion) => {
-          this.educacion = Response;
+    if (this.experiencia) {
+      this.experiencia.nombreEmpresa = this.form.get("name")?.value;
+      this.experiencia.esTrabajoActual = this.form.get("actual")?.value;
+      this.experiencia.fechaInicio = this.form.get("date")?.value;
+      this.experiencia.fechaFin = this.form.get("datend")?.value;
+      this.experiencia.descripcion = this.form.get("description")?.value;
+      this.experienciaService.updateExperiencia(this.idPersona, this.experiencia).subscribe({
+        next: (Response: Experiencia) => {
+          this.experiencia = Response;
+          this.caller && this.caller.getExperiencia();
+          this.form.setValue({
+            name: this.experiencia?.nombreEmpresa,
+            actual: this.experiencia?.esTrabajoActual,
+            date: this.experiencia?.fechaInicio,
+            datend: this.experiencia?.fechaFin,
+            description: this.experiencia?.descripcion,
+          });
         },
         error: (error: HttpErrorResponse) => {
           alert(error.message);
         }
       });
-  }
-  edit() {
-    alert('borrar');
+    }
+    else {
+      const experiencia = {
+        nombreEmpresa: this.form.get("name")?.value,
+        esTrabajoActual: this.form.get("actual")?.value,
+        fechaInicio: this.form.get("date")?.value,
+        fechaFin: this.form.get("datend")?.value,
+        descripcion: this.form.get("description")?.value,
+      };
+      this.experienciaService.addExperiencia(this.idPersona, experiencia).subscribe({
+        next: (Response: Experiencia) => {
+          this.experiencia = Response;
+          this.caller && this.caller.getExperiencia();
+          this.form.setValue({
+            name: this.experiencia?.nombreEmpresa,
+            actual: this.experiencia?.esTrabajoActual,
+            date: this.experiencia?.fechaInicio,
+            datend: this.experiencia?.fechaFin,
+            description: this.experiencia?.descripcion,            
+          });
+        },
+        error: (error: HttpErrorResponse) => {
+          alert(error.message);
+        }
+      });
+    }
     this.modal.close('Ok click');
   }
 }
-
-
 
 const MODALS: {[name: string]: Type<any>} = {
   deleteExperiencia: NgbdModalDeleteExperiencia,

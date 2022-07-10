@@ -29,7 +29,7 @@ export class ProyectosService {
   }
   //método para actualizar/ editar proyectos
   public updateProyecto(idPersona:number, proyecto: Proyecto):Observable<Proyecto>{
-    return this.http.put<Proyecto>(`${this.apiServerUrl}/persona/${idPersona}/proyecto/new`, proyecto); 
+    return this.http.post<Proyecto>(`${this.apiServerUrl}/persona/${idPersona}/proyecto/new`, proyecto); 
   }
   //método para borrar proyecto
   public deleteProyecto(idPersona:number, idProyecto: number):Observable<void>{

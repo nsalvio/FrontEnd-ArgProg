@@ -52,14 +52,14 @@
 <div class="container">
     <div class="row" *ngFor="let educacion of educaciones">
         <div class="col">
-            <div>
+            <p>
                 {{educacion.carrera}}
                 {{educacion.instituto}}
-            </div>
+                {{educacion.estudiaActualmente}}
+                {{educacion.fechaInicio}}
+                {{educacion.fechaFin}}
+            </p>
         </div>
-        {{educacion.estudiaActualmente}}
-        {{educacion.fechaInicio}}
-        {{educacion.fechaFin}}
 
         <div class="col">
             <div class="row">

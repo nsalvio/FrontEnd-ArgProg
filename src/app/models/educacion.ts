@@ -1,6 +1,6 @@
 export interface Educacion{
     
-    id:number, 
+    id?:number, 
     carrera:string,
     estudiaActualmente:boolean,
     instituto:string, 

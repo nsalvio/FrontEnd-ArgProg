@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit, Type } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, Type } from '@angular/core';
 import { faEdit, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Skill } from 'src/app/models/skills';
@@ -21,7 +21,7 @@ export class SkillsComponent implements OnInit {
   public skills: Skill[] = [];
   private idPersona = 13;
 
-  constructor(private skillsService: SkillsService, private _modalService: NgbModal) { }
+  constructor(private skillsService: SkillsService, private _modalService: NgbModal, private _cdr: ChangeDetectorRef) { }
 
 
   ngOnInit(): void {
@@ -32,6 +32,7 @@ export class SkillsComponent implements OnInit {
     this.skillsService.getSkills(this.idPersona).subscribe({
       next: (Response: Skill[]) => {
         this.skills = Response;
+        this._cdr.detectChanges();
       },
       error: (error: HttpErrorResponse) => {
         alert(error.message);
@@ -42,6 +43,7 @@ export class SkillsComponent implements OnInit {
   open(name: string, id?: number) {
     const modal = this._modalService.open(MODALS[name]);
     modal.componentInstance.idSkill = id;
+    modal.componentInstance.caller = this;
   }
 }
 
@@ -86,6 +88,8 @@ export class NgbdModalEditSkills {
   public skill?: Skill;
   private idPersona = 13;
 
+  public caller?: SkillsComponent;
+
   form: FormGroup;
 
   constructor(public modal: NgbActiveModal, private skillsService: SkillsService, private formBuilder: FormBuilder) {
@@ -118,11 +122,31 @@ export class NgbdModalEditSkills {
   }
   edit() {
     if (this.skill) {
-      this.skill.nombreSkill = this.form.get("name")?.value;      
+      this.skill.nombreSkill = this.form.get("name")?.value;
       this.skill.porcentaje = this.form.get("percentage")?.value;
       this.skillsService.updateSkills(this.idPersona, this.skill).subscribe({
         next: (Response: Skill) => {
           this.skill = Response;
+          this.caller && this.caller.getSkills();
+          this.form.setValue({
+            name: this.skill?.nombreSkill,
+            percentage: this.skill?.porcentaje
+          });
+        },
+        error: (error: HttpErrorResponse) => {
+          alert(error.message);
+        }
+      });
+    }
+    else {
+      const skill = {
+        nombreSkill: this.form.get("name")?.value,
+        porcentaje: this.form.get("percentage")?.value
+      };
+      this.skillsService.addSkills(this.idPersona, skill).subscribe({
+        next: (Response: Skill) => {
+          this.skill = Response;
+          this.caller && this.caller.getSkills();
           this.form.setValue({
             name: this.skill?.nombreSkill,
             percentage: this.skill?.porcentaje
@@ -157,11 +181,22 @@ export class NgbdModalEditSkills {
 })
 export class NgbdModalDeleteSkill {
   public idSkill?: number;
+  public idPersona = 13;
+  public caller?: SkillsComponent;
 
-  constructor(public modal: NgbActiveModal) { }
+  constructor(public modal: NgbActiveModal, private skillsService: SkillsService) { }
 
   delete() {
-    alert('borrar');
+    if (this.idSkill) {
+      this.skillsService.deleteSkill(this.idPersona, this.idSkill).subscribe({
+        next: () => {
+          this.caller && this.caller.getSkills(); //CHANGE DETECTOR//
+        },
+        error: (error: HttpErrorResponse) => {
+          alert(error.message);
+        }
+      });
+    }
     this.modal.close('Ok click');
   }
 }

@@ -1,5 +1,5 @@
 export interface Experiencia{
-    idExperiencia:number,
+    idExperiencia?:number,
 	nombreEmpresa:string,
 	esTrabajoActual:boolean,
 	fechaInicio:number,

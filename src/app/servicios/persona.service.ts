@@ -19,6 +19,6 @@ export class PersonaService {
 
   //método para actualizar persona
   public updatePersona(persona: Persona):Observable<Persona>{ //putUser:actualiza el usuario.  Observable: trae los métodos
-    return this.http.put<Persona>(`${this.apiServerUrl}/editar/${persona.id}`, persona);
+    return this.http.put<Persona>(`${this.apiServerUrl}/persona/editar/${persona.id}`, persona);
   }
 }

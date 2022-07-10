@@ -25,15 +25,15 @@ export class SkillsService {
   }
 
   //método para agregar skill
-  public addSkills (skills: Skill):Observable<Skill>{
-    return this.http.post<Skill>(`${this.apiServerUrl}/Skills/new`, skills); 
+  public addSkills (idPersona: number, skills: Skill):Observable<Skill>{
+    return this.http.post<Skill>(`${this.apiServerUrl}/persona/${idPersona}/Skills/new`, skills); 
   }
   //método para actualizar/ editar skills
   public updateSkills(idPersona: number, skill: Skill):Observable<Skill>{
     return this.http.put<Skill>(`${this.apiServerUrl}/persona/${idPersona}/Skills/edit/${skill.id}`, skill); 
   }
   //método para borrar skill
-  public deleteSkill(idSkills: number):Observable<void>{
-    return this.http.delete<void>(`${this.apiServerUrl}/skills/delete/${idSkills}`); 
+  public deleteSkill(idPersona: number, idSkills: number):Observable<void>{
+    return this.http.delete<void>(`${this.apiServerUrl}/persona/${idPersona}/Skills/delete/${idSkills}`); 
   }
 }
