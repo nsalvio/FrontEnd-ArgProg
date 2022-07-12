@@ -32,21 +32,26 @@ export class IniciarSesionComponent implements OnInit {
   }
 
   get Email() {
-    return this.form.get(`email`);
+    return this.form.get(`usuario`);
   }
 
   get Password() {
-    return this.form.get(`password`);
+    return this.form.get(`contrasenia`);
   }
 
   onEnviar(event: Event) {
     event.preventDefault;
-    this.loginService.updateProyecto(this.form.value).subscribe({
-      next: (login: Login) => { alert ("inicio de sesión exitoso")
-      
-      
-        this.ruta.navigate(['/portfolio']) },
-      error: (error: HttpErrorResponse) => {alert(error.message)}
+    this.loginService.login(this.form.value).subscribe({
+      next: (result: boolean) => {
+        if (result) {
+          alert("Inicio de sesión exitoso");
+          this.ruta.navigate(['/portfolio']);
+        }
+        else {
+          alert("Usuario/Contraseña no válido");
+        }
+      },
+      error: (error: HttpErrorResponse) => { alert(error.message) }
     })
   }
 }

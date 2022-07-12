@@ -14,9 +14,9 @@ export class LoginService {
 
   constructor(private http:HttpClient) { }
 
-  //método para actualizar/ editar login
-  public updateProyecto(login: Login):Observable<Login>{
-    return this.http.post<Login>(this.url, login); 
+  //método para actualizar/ editar boolean
+  public login(login: Login):Observable<boolean>{
+    return this.http.post<boolean>(this.url, login); 
   }
 }
 
