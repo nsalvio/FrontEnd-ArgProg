@@ -1,7 +1,7 @@
 export interface Proyecto{
     idProyecto?:number,
     nombreDelProyecto:string,
-    fechaDeRealizacion:number,
+    fechaDeRealizacion:Date,
     descripcion:string,
     link:string,
 }

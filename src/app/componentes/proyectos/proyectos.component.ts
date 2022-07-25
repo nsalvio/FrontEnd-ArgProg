@@ -6,6 +6,8 @@ import { Proyecto } from 'src/app/models/proyectos';
 import { ProyectosService } from 'src/app/servicios/proyectos.service';
 import { FormControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ThisReceiver } from '@angular/compiler';
+import { LoginService, Roles } from 'src/app/servicios/login.service';
+import { EditableComponent } from 'src/app/editable.component';
 
 
 @Component({
@@ -13,19 +15,22 @@ import { ThisReceiver } from '@angular/compiler';
   templateUrl: './proyectos.component.html',
   styleUrls: ['./proyectos.component.css']
 })
-export class ProyectosComponent implements OnInit {
+export class ProyectosComponent extends EditableComponent implements OnInit {
 
   faEdit = faEdit;
   faPlus = faPlus;
   faTrash = faTrash;
 
   public proyectos: Proyecto[] = [];
-  private idPersona = 13;
 
-  constructor(private proyectoService: ProyectosService, private _modalService: NgbModal, private _cdr: ChangeDetectorRef) { }
+  constructor(private proyectoService: ProyectosService, private _modalService: NgbModal, private _cdr: ChangeDetectorRef, loginService: LoginService) { 
+    super(loginService);
+  }
 
   ngOnInit(): void {
-    this.getProyecto();
+    if(this.isAuthenticated()){
+      this.getProyecto();
+    }
   }
 
   public getProyecto(): void {
@@ -137,7 +142,7 @@ export class NgbdModalDeleteProyecto {
         <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancelar</button>
         <button type="button" class="btn btn-danger" (click)="edit()">Guardar</button>
       </div>
-</form>` 
+</form>`
 })
 export class NgbdModalEditProyecto {
   public idProyecto?: number;
@@ -145,20 +150,20 @@ export class NgbdModalEditProyecto {
   public proyecto?: Proyecto;
   private idPersona = 13;
 
-  public caller?:ProyectosComponent;
+  public caller?: ProyectosComponent;
 
   form: FormGroup;
 
-  constructor(public modal: NgbActiveModal, private proyectoService: ProyectosService, private formBuilder: FormBuilder) { 
-  this.form = this.formBuilder.group(
-    {
-      name: [``, [Validators.required]],
-      description: [``, [Validators.required]],
-      date: [``, [Validators.required]],
-      link: [``, [Validators.required]],
-    }
-  )
-}
+  constructor(public modal: NgbActiveModal, private proyectoService: ProyectosService, private formBuilder: FormBuilder) {
+    this.form = this.formBuilder.group(
+      {
+        name: [``, [Validators.required]],
+        description: [``, [Validators.required]],
+        date: [``, [Validators.required]],
+        link: [``, [Validators.required]],
+      }
+    )
+  }
   ngOnInit(): void {
     this.getProyecto();
   }
@@ -182,10 +187,10 @@ export class NgbdModalEditProyecto {
   }
   edit() {
     if (this.proyecto) {
-      this.proyecto.nombreDelProyecto = this.form.get("name")?.value;      
+      this.proyecto.nombreDelProyecto = this.form.get("name")?.value;
       this.proyecto.fechaDeRealizacion = this.form.get("date")?.value;
       this.proyecto.descripcion = this.form.get("description")?.value;
-      this.proyecto.link = this.form.get("link")?.value;      
+      this.proyecto.link = this.form.get("link")?.value;
       this.proyectoService.updateProyecto(this.idPersona, this.proyecto).subscribe({
         next: (Response: Proyecto) => {
           this.proyecto = Response;
@@ -199,24 +204,24 @@ export class NgbdModalEditProyecto {
         },
       });
     }
-        else {
-          const proyecto = {
-            nombreDelProyecto: this.form.get("name")?.value,
-            fechaDeRealizacion: this.form.get("date")?.value,
-            descripcion: this.form.get("description")?.value,
-            link: this.form.get("link")?.value,
-          };
-          this.proyectoService.addProyecto(this.idPersona, proyecto).subscribe({
-            next: (Response: Proyecto) => {
-              this.proyecto = Response;
-              this.caller && this.caller.getProyecto();
-              this.form.setValue({
-                name: this.proyecto?.nombreDelProyecto,
-                date: this.proyecto?.fechaDeRealizacion,
-                descripcion: this.proyecto?.descripcion,
-                link: this.proyecto?.link,
-              });
-            },
+    else {
+      const proyecto = {
+        nombreDelProyecto: this.form.get("name")?.value,
+        fechaDeRealizacion: this.form.get("date")?.value,
+        descripcion: this.form.get("description")?.value,
+        link: this.form.get("link")?.value,
+      };
+      this.proyectoService.addProyecto(this.idPersona, proyecto).subscribe({
+        next: (Response: Proyecto) => {
+          this.proyecto = Response;
+          this.caller && this.caller.getProyecto();
+          this.form.setValue({
+            name: this.proyecto?.nombreDelProyecto,
+            date: this.proyecto?.fechaDeRealizacion,
+            descripcion: this.proyecto?.descripcion,
+            link: this.proyecto?.link,
+          });
+        },
 
         error: (error: HttpErrorResponse) => {
           alert(error.message);

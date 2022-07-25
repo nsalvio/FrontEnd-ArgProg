@@ -8,6 +8,8 @@ import { EducacionService } from 'src/app/servicios/educacion.service';
 import { ExperienciaService } from 'src/app/servicios/experiencia.service';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ThisReceiver } from '@angular/compiler';
+import { EditableComponent } from 'src/app/editable.component';
+import { LoginService } from 'src/app/servicios/login.service';
 
 
 @Component({
@@ -15,18 +17,20 @@ import { ThisReceiver } from '@angular/compiler';
   templateUrl: './experiencia-y-educacion.component.html',
   styleUrls: ['./experiencia-y-educacion.component.css']
 })
-export class ExperienciaYEducacionComponent implements OnInit {
+export class ExperienciaYEducacionComponent extends EditableComponent implements OnInit {
   faEdit = faEdit;
   faPlus = faPlus;
   faTrash = faTrash;
 
   public educaciones: Educacion[] = [];
   public experiencias: Experiencia[] = [];
-  private idPersona = 13;
 
-  constructor(private educacionService: EducacionService, private experienciaService: ExperienciaService, private _modalService: NgbModal, private _cdr: ChangeDetectorRef) { }
+  constructor(private educacionService: EducacionService, private experienciaService: ExperienciaService, private _modalService: NgbModal, private _cdr: ChangeDetectorRef, loginService: LoginService) {
+    super(loginService);
+   }
 
   ngOnInit(): void {
+    if(this.isAuthenticated())
     this.getEducacion();
     this.getExperiencia();
   }
@@ -125,8 +129,8 @@ export class NgbdModalDeleteExperiencia {
 })
 export class NgbdModalDeleteEducacion {
   public id?: number;
-  public idPersona = 13;
   public caller?: ExperienciaYEducacionComponent;
+  public idPersona = 13;
 
   constructor(public modal: NgbActiveModal, private educacionService: EducacionService) {}
 

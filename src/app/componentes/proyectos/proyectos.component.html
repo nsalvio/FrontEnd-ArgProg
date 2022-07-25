@@ -1,7 +1,7 @@
 <div>
     <h2>Proyectos
-        <span style="font-size: 1.5rem;">
-            <fa-icon [icon]="faPlus"(click)="open('addProyecto')">
+        <span *ngIf="canEdit()" style="font-size: 1.5rem;">
+            <fa-icon [icon]="faPlus" (click)="open('addProyecto')">
                 <div>Open confirm modal</div>
                 <div class="text-dark" aria-hidden="true"><small>&times; button will be focused</small></div>>
             </fa-icon>
@@ -12,15 +12,23 @@
     <div class="row" *ngFor="let proyecto of proyectos">
         <div class="col">
             <p>
-                {{proyecto.nombreDelProyecto}}
+                <div>
+                <b>{{proyecto.nombreDelProyecto}}</b>
+                </div>
+                <div>
                 {{proyecto.descripcion}}
-                {{proyecto.fechaDeRealizacion}}
+                </div>
+                <div>
+                {{(getFormattedDate(proyecto.fechaDeRealizacion))}}
+                </div>
+                <div>
                 {{proyecto.link}}
-
-            </p>
-        </div>         
-            <div class="row">
-                <div class="col">
+                </div>
+            <p></p>
+         </div>         
+            <div class="col">
+                <div class="row">
+                  <div class="col" *ngIf="canEdit()">
                    <fa-icon [icon]="faEdit" (click)="open('editProyecto', proyecto.idProyecto)">
                         <div>Open confirm modal</div>
                         <div class="text-dark" aria-hidden="true"><small>&times; button will be focused</small></div>>

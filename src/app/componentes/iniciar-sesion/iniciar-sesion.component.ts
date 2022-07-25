@@ -1,11 +1,9 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { jitOnlyGuardedExpression } from '@angular/compiler/src/render3/util';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Login } from 'src/app/models/login';
-import { AutenticacionService } from 'src/app/servicios/autenticacion.service';
-import { LoginService } from 'src/app/servicios/login.service';
+import { LoginResponse } from 'src/app/models/login';
+import { LoginService, Roles } from 'src/app/servicios/login.service';
 
 @Component({
   selector: 'app-iniciar-sesion',
@@ -14,11 +12,14 @@ import { LoginService } from 'src/app/servicios/login.service';
 })
 export class IniciarSesionComponent implements OnInit {
   form: FormGroup;
+  authenticado:boolean = false
+  
   constructor(private formBuilder: FormBuilder, private loginService: LoginService, private ruta: Router) {
     this.form = this.formBuilder.group(
       {
         usuario: [``, [Validators.required,]],
         contrasenia: [``, [Validators.required, Validators.minLength(8)]],
+        role: [``, [Validators.required,]],
         deviceInfo: this.formBuilder.group({
           deviceId: ["17867868768"],
           deviceType: ["DEVICE_TYPE_ANDROID"],
@@ -39,15 +40,19 @@ export class IniciarSesionComponent implements OnInit {
     return this.form.get(`contrasenia`);
   }
 
+  
+
   onEnviar(event: Event) {
     event.preventDefault;
     this.loginService.login(this.form.value).subscribe({
-      next: (result: boolean) => {
+      next: (result: LoginResponse) => {
         if (result) {
-          alert("Inicio de sesión exitoso");
+          authenticado: true;
+          this.loginService.setContextInfo(result.idPersona, result.role);
           this.ruta.navigate(['/portfolio']);
         }
         else {
+          authenticado: false;
           alert("Usuario/Contraseña no válido");
         }
       },

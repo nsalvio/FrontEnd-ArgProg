@@ -6,6 +6,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormControl, FormBuilder, FormGroup, Validators, MaxLengthValidator } from '@angular/forms';
 import { ThisReceiver } from '@angular/compiler';
+import { EditableComponent } from 'src/app/editable.component';
+import { LoginService } from 'src/app/servicios/login.service';
 
 
 @Component({
@@ -13,16 +15,19 @@ import { ThisReceiver } from '@angular/compiler';
   templateUrl: './acerca-de.component.html',
   styleUrls: ['./acerca-de.component.css']
 })
-export class AcercaDeComponent implements OnInit {
+export class AcercaDeComponent extends EditableComponent implements OnInit {
   faEdit = faEdit;
 
-  private idPersona = 13;
   public persona : Persona | undefined;
 
-  constructor(private personaService : PersonaService, private _modalService: NgbModal, private _cdr: ChangeDetectorRef) { }
+  constructor(private personaService : PersonaService, private _modalService: NgbModal, private _cdr: ChangeDetectorRef, loginService: LoginService) {
+    super(loginService);
+  }
 
   ngOnInit(): void {
+    if(this.isAuthenticated()){
     this.getPersona();
+    }
   }
 
   public getPersona(): void {

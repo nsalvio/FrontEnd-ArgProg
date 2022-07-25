@@ -11,16 +11,13 @@
             <a href="https://github.com/nsalvio" target="_blank">
                 <fa-icon [icon]="faGithub" size="lg"></fa-icon>
             </a>
-            <button><i class="fas fa-sign-in-alt"></i>Login</button>
-
-
+            <button (click)="logout()"><i class="fas fa-sign-in-alt"></i>Logout </button>
         </div>
     </div>
 </header>
 <section id="perfil">
     <div class="profile-header">
         <div class="profile-banner">
-            <img class="banner" src="fondo">
             <div class="profile-img">
                 <img class="image" src="{{persona?.fotoPerfil}}"
                     style="width: 100%;; border-radius: 50%;">

@@ -1,6 +1,6 @@
 <div>
     <h2>Experiencia
-        <span style="font-size: 1.5rem;">
+        <span style="font-size: 1.5rem;" *ngIf="canEdit()">
             <fa-icon [icon]="faPlus" (click)="open('addExperiencia')">
                 <div>Open confirm modal</div>
                 <div class="text-dark" aria-hidden="true"><small>&times; button will be focused</small></div>>
@@ -13,17 +13,24 @@
     <div class="row" *ngFor="let experiencia of experiencias">
         <div class="col">
             <p>
-                {{experiencia.nombreEmpresa}}
-                {{experiencia.descripcion}}
-                {{experiencia.esTrabajoActual ? "(Trabajo Actual)" : "-"}}
-                {{experiencia.fechaInicio}}
-                {{experiencia.fechaFin}}
-            </p>
+               <div>
+                  <b>{{experiencia.nombreEmpresa}}</b>
+               </div>
+               <div>
+                    {{getFormattedDate(experiencia.fechaInicio)}} - 
+                    {{experiencia.esTrabajoActual ? "Actualidad" : getFormattedDate(experiencia.fechaFin)}}    
+                </div>
+                <div>
+                    {{experiencia.descripcion}}
+                </div>
+                <p>
+                </p>
         </div>
+
 
         <div class="col">
             <div class="row">
-                <div class="col">
+                <div class="col" *ngIf="canEdit()">
                     <fa-icon [icon]="faEdit" (click)="open('editExperiencia', experiencia.idExperiencia)">
                         <div>Open confirm modal</div>
                         <div class="text-dark" aria-hidden="true"><small>&times; button will be focused</small></div>>>
@@ -41,7 +48,7 @@
 
 <div>
     <h2>Educación
-        <span style="font-size: 1.5rem;">
+        <span style="font-size: 1.5rem;" *ngIf="canEdit()">
             <fa-icon [icon]="faPlus" (click)="open('addEducacion')">
                 <div>Open confirm modal</div>
                 <div class="text-dark" aria-hidden="true"><small>&times; button will be focused</small></div>>
@@ -53,17 +60,23 @@
     <div class="row" *ngFor="let educacion of educaciones">
         <div class="col">
             <p>
-                {{educacion.carrera}}
+                <div>
+                <b>{{educacion.carrera}}</b>
+                </div>
+                <div>
                 {{educacion.instituto}}
-                {{educacion.estudiaActualmente}}
-                {{educacion.fechaInicio}}
-                {{educacion.fechaFin}}
-            </p>
+                </div>
+                <div>
+                {{getFormattedDate(educacion.fechaInicio)}} - 
+                {{educacion.estudiaActualmente ? "Actualidad" : getFormattedDate(educacion.fechaFin)}} 
+                </div>
+                <p>
+                </p>
         </div>
 
         <div class="col">
             <div class="row">
-                <div class="col">
+                <div class="col" *ngIf="canEdit()">
                     <fa-icon [icon]="faEdit" (click)="open('editEducacion', educacion.id)">
                         <div>Open confirm modal</div>
                         <div class="text-dark" aria-hidden="true"><small>&times; button will be focused</small></div>>

@@ -9,7 +9,7 @@
                 </div>            
         </div>
     </div> 
-            <div class="row">
+            <div class="row" *ngIf="canEdit()">
                 <div class="col">
                         <fa-icon [icon]="faEdit"(click)="open('editPersona')">
                             <div>Open confirm modal</div>

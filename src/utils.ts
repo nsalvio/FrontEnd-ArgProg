@@ -1,0 +1,1 @@
+export const formatDate = (input: string) => new Date(input).toLocaleDateString('es-AR');

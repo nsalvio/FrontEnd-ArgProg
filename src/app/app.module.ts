@@ -16,7 +16,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IniciarSesionComponent } from './componentes/iniciar-sesion/iniciar-sesion.component';
 import { PortfolioComponent } from './componentes/portfolio/portfolio.component';
 import { PortfolioService } from './servicios/portfolio.service';
-import { InterceptorService } from './servicios/interceptor.service';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 
@@ -47,7 +46,6 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     NgbModule
   ],
   providers: [PortfolioService,
-    { provide: HTTP_INTERCEPTORS, useClass: InterceptorService, multi : true },
   ],
   bootstrap: [AppComponent]
 

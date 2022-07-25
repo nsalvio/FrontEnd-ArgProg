@@ -1,6 +1,6 @@
 <div>
     <h2>Hard & Soft Skills
-        <span style="font-size: 1.5rem;">
+        <span style="font-size: 1.5rem;"  *ngIf="canEdit()">
             <fa-icon [icon]="faPlus"(click)="open('addSkill')">
                 <div>Open confirm modal</div>
                 <div class="text-dark" aria-hidden="true"><small>&times; button will be focused</small></div>>
@@ -17,7 +17,7 @@
             [outerStrokeColor]="'rgb(128, 0, 70)'" [innerStrokeColor]="'black'" [animation]="true"
             [animationDuration]="500"></circle-progress>
         </div>
-        <div class="col">
+        <div class="col" *ngIf="canEdit()">
             <fa-icon [icon]="faEdit" (click)="open('editSkill', skill?.id)">
             <div>Open confirm modal</div>
             <div class="text-dark" aria-hidden="true"><small>&times; button will be focused</small></div>>

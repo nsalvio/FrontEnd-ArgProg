@@ -6,26 +6,31 @@ import { Skill } from 'src/app/models/skills';
 import { SkillsService } from 'src/app/servicios/skills.service';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ThisReceiver } from '@angular/compiler';
+import { EditableComponent } from 'src/app/editable.component';
+import { LoginService } from 'src/app/servicios/login.service';
 
 @Component({
   selector: 'app-skills',
   templateUrl: './skills.component.html',
   styleUrls: ['./skills.component.css']
 })
-export class SkillsComponent implements OnInit {
+export class SkillsComponent extends EditableComponent implements OnInit {
 
   faEdit = faEdit;
   faTrash = faTrash;
   faPlus = faPlus;
 
   public skills: Skill[] = [];
-  private idPersona = 13;
 
-  constructor(private skillsService: SkillsService, private _modalService: NgbModal, private _cdr: ChangeDetectorRef) { }
+  constructor(private skillsService: SkillsService, private _modalService: NgbModal, private _cdr: ChangeDetectorRef, loginService: LoginService) {
+    super(loginService);
+  }
 
 
   ngOnInit(): void {
-    this.getSkills();
+    if (this.isAuthenticated()) {
+      this.getSkills();
+    }
   }
 
   public getSkills(): void {

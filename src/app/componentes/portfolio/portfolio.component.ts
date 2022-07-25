@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { LoginService } from 'src/app/servicios/login.service';
 
 @Component({
   selector: 'app-portfolio',
@@ -7,9 +9,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class PortfolioComponent implements OnInit {
 
-  constructor() { }
+  constructor(private loginService: LoginService, private ruta: Router) { }
 
   ngOnInit(): void {
+    if(!this.loginService.isAuthenticated()){
+      this.ruta.navigate(['/']);
+    }
+
   }
 
 }
