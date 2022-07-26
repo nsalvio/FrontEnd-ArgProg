@@ -78,7 +78,6 @@ export class AcercaDeComponent extends EditableComponent implements OnInit {
 export class NgbdModalEditPersona {
   public id?: number;
   public persona?: Persona;
-  private idPersona = 13;
 
   public caller?:AcercaDeComponent;
 

@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiBaseUrl: `y`
+  apiBaseUrl: `https://safe-coast-82454.herokuapp.com`
 };

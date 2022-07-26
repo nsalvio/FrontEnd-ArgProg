@@ -63,7 +63,8 @@ export class ExperienciaYEducacionComponent extends EditableComponent implements
     const modal = this._modalService.open(MODALS[name], {
       size: "xl"
     });
-    modal.componentInstance.id = id;
+    modal.componentInstance.id = id;    
+    modal.componentInstance.idPersona = this.idPersona;
     modal.componentInstance.caller = this;
     }
 }
@@ -88,7 +89,7 @@ export class ExperienciaYEducacionComponent extends EditableComponent implements
 })
 export class NgbdModalDeleteExperiencia {
   public id?: number;
-  public idPersona = 13;
+  public idPersona?: number;
   public caller?: ExperienciaYEducacionComponent;
 
   constructor(public modal: NgbActiveModal, private experienciaService: ExperienciaService) {}
@@ -96,7 +97,7 @@ export class NgbdModalDeleteExperiencia {
   delete(){
 
     if (this.id) {
-      this.experienciaService.deleteExperiencia(this.idPersona, this.id).subscribe({
+      this.experienciaService.deleteExperiencia(this.idPersona!, this.id).subscribe({
         next: () => {
           this.caller && this.caller.getExperiencia(); //CHANGE DETECTOR//
         },
@@ -130,13 +131,13 @@ export class NgbdModalDeleteExperiencia {
 export class NgbdModalDeleteEducacion {
   public id?: number;
   public caller?: ExperienciaYEducacionComponent;
-  public idPersona = 13;
+  public idPersona?: number;
 
   constructor(public modal: NgbActiveModal, private educacionService: EducacionService) {}
 
   delete(){
     if (this.id) {
-      this.educacionService.deleteEducacion(this.idPersona, this.id).subscribe({
+      this.educacionService.deleteEducacion(this.idPersona!, this.id).subscribe({
         next: () => {
           this.caller && this.caller.getEducacion(); //CHANGE DETECTOR//
         },
@@ -209,7 +210,7 @@ export class NgbdModalDeleteEducacion {
 export class NgbdModalEditEducacion {
   public id?: number;
   public educacion?: Educacion;
-  private idPersona = 13;
+  public idPersona?: number;
   
 
   public caller?:ExperienciaYEducacionComponent;
@@ -234,7 +235,7 @@ export class NgbdModalEditEducacion {
 
   public getEducacion(): void {
     this.id &&
-      this.educacionService.getEducacion(this.idPersona, this.id).subscribe({
+      this.educacionService.getEducacion(this.idPersona!, this.id).subscribe({
         next: (Response: Educacion) => {
           this.educacion = Response;
           this.form.setValue({
@@ -257,7 +258,7 @@ export class NgbdModalEditEducacion {
       this.educacion.instituto = this.form.get("institute")?.value;      
       this.educacion.fechaInicio = this.form.get("date")?.value;
       this.educacion.fechaFin = this.form.get("datend")?.value;
-      this.educacionService.updateEducacion(this.idPersona, this.educacion).subscribe({
+      this.educacionService.updateEducacion(this.idPersona!, this.educacion).subscribe({
         next: (Response: Educacion) => {
           this.educacion = Response;
           this.caller && this.caller.getEducacion();
@@ -275,7 +276,7 @@ export class NgbdModalEditEducacion {
         fechaInicio: this.form.get("date")?.value,
         fechaFin: this.form.get("datend")?.value,
       };
-      this.educacionService.addEducacion(this.idPersona, educacion).subscribe({
+      this.educacionService.addEducacion(this.idPersona!, educacion).subscribe({
         next: (Response: Educacion) => {
           this.educacion = Response;
           this.caller && this.caller.getEducacion();
@@ -358,7 +359,7 @@ export class NgbdModalEditExperiencia {
   public id?: number;
 
   public experiencia?: Experiencia;
-  private idPersona = 13;
+  public idPersona?: number;
 
   public caller?: ExperienciaYEducacionComponent;
 
@@ -382,7 +383,7 @@ export class NgbdModalEditExperiencia {
 
   public getExperiencia(): void {
     this.id &&
-      this.experienciaService.getExperiencia(this.idPersona, this.id).subscribe({
+      this.experienciaService.getExperiencia(this.idPersona!, this.id).subscribe({
         next: (Response: Experiencia) => {
           this.experiencia = Response;
           this.form.setValue({
@@ -405,7 +406,7 @@ export class NgbdModalEditExperiencia {
       this.experiencia.fechaInicio = this.form.get("date")?.value;
       this.experiencia.fechaFin = this.form.get("datend")?.value;
       this.experiencia.descripcion = this.form.get("description")?.value;
-      this.experienciaService.updateExperiencia(this.idPersona, this.experiencia).subscribe({
+      this.experienciaService.updateExperiencia(this.idPersona!, this.experiencia).subscribe({
         next: (Response: Experiencia) => {
           this.experiencia = Response;
           this.caller && this.caller.getExperiencia();
@@ -430,7 +431,7 @@ export class NgbdModalEditExperiencia {
         fechaFin: this.form.get("datend")?.value,
         descripcion: this.form.get("description")?.value,
       };
-      this.experienciaService.addExperiencia(this.idPersona, experiencia).subscribe({
+      this.experienciaService.addExperiencia(this.idPersona!, experiencia).subscribe({
         next: (Response: Experiencia) => {
           this.experiencia = Response;
           this.caller && this.caller.getExperiencia();

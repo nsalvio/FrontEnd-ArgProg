@@ -47,7 +47,8 @@ export class ProyectosComponent extends EditableComponent implements OnInit {
 
   open(name: string, id?: number) {
     const modal = this._modalService.open(MODALS[name]);
-    modal.componentInstance.idProyecto = id;
+    modal.componentInstance.idProyecto = id;    
+    modal.componentInstance.idPersona = this.idPersona;
     modal.componentInstance.caller = this;
   }
 }
@@ -73,14 +74,14 @@ export class ProyectosComponent extends EditableComponent implements OnInit {
 })
 export class NgbdModalDeleteProyecto {
   public idProyecto?: number;
-  public idPersona = 13;
+  private idPersona?: number;
   public caller?: ProyectosComponent;
 
   constructor(public modal: NgbActiveModal, private proyectosService: ProyectosService) { }
 
   delete() {
     if (this.idProyecto) {
-      this.proyectosService.deleteProyecto(this.idPersona, this.idProyecto).subscribe({
+      this.proyectosService.deleteProyecto(this.idPersona!, this.idProyecto).subscribe({
         next: () => {
           this.caller && this.caller.getProyecto(); //CHANGE DETECTOR//
         },
@@ -148,7 +149,7 @@ export class NgbdModalEditProyecto {
   public idProyecto?: number;
 
   public proyecto?: Proyecto;
-  private idPersona = 13;
+  private idPersona?: number;
 
   public caller?: ProyectosComponent;
 
@@ -170,7 +171,7 @@ export class NgbdModalEditProyecto {
 
   public getProyecto(): void {
     this.idProyecto &&
-      this.proyectoService.getProyecto(this.idPersona, this.idProyecto).subscribe({
+      this.proyectoService.getProyecto(this.idPersona!, this.idProyecto).subscribe({
         next: (Response: Proyecto) => {
           this.proyecto = Response;
           this.form.setValue({
@@ -191,7 +192,7 @@ export class NgbdModalEditProyecto {
       this.proyecto.fechaDeRealizacion = this.form.get("date")?.value;
       this.proyecto.descripcion = this.form.get("description")?.value;
       this.proyecto.link = this.form.get("link")?.value;
-      this.proyectoService.updateProyecto(this.idPersona, this.proyecto).subscribe({
+      this.proyectoService.updateProyecto(this.idPersona!, this.proyecto).subscribe({
         next: (Response: Proyecto) => {
           this.proyecto = Response;
           this.caller && this.caller.getProyecto();
@@ -211,7 +212,7 @@ export class NgbdModalEditProyecto {
         descripcion: this.form.get("description")?.value,
         link: this.form.get("link")?.value,
       };
-      this.proyectoService.addProyecto(this.idPersona, proyecto).subscribe({
+      this.proyectoService.addProyecto(this.idPersona!, proyecto).subscribe({
         next: (Response: Proyecto) => {
           this.proyecto = Response;
           this.caller && this.caller.getProyecto();

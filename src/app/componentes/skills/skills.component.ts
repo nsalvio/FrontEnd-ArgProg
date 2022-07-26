@@ -48,6 +48,7 @@ export class SkillsComponent extends EditableComponent implements OnInit {
   open(name: string, id?: number) {
     const modal = this._modalService.open(MODALS[name]);
     modal.componentInstance.idSkill = id;
+    modal.componentInstance.idPersona = this.idPersona;
     modal.componentInstance.caller = this;
   }
 }
@@ -91,7 +92,7 @@ export class NgbdModalEditSkills {
   public idSkill?: number;
 
   public skill?: Skill;
-  private idPersona = 13;
+  private idPersona?: number;
 
   public caller?: SkillsComponent;
 
@@ -112,7 +113,7 @@ export class NgbdModalEditSkills {
 
   public getSkills(): void {
     this.idSkill &&
-      this.skillsService.getSkill(this.idPersona, this.idSkill).subscribe({
+      this.skillsService.getSkill(this.idPersona!, this.idSkill).subscribe({
         next: (Response: Skill) => {
           this.skill = Response;
           this.form.setValue({
@@ -129,7 +130,7 @@ export class NgbdModalEditSkills {
     if (this.skill) {
       this.skill.nombreSkill = this.form.get("name")?.value;
       this.skill.porcentaje = this.form.get("percentage")?.value;
-      this.skillsService.updateSkills(this.idPersona, this.skill).subscribe({
+      this.skillsService.updateSkills(this.idPersona!, this.skill).subscribe({
         next: (Response: Skill) => {
           this.skill = Response;
           this.caller && this.caller.getSkills();
@@ -148,7 +149,7 @@ export class NgbdModalEditSkills {
         nombreSkill: this.form.get("name")?.value,
         porcentaje: this.form.get("percentage")?.value
       };
-      this.skillsService.addSkills(this.idPersona, skill).subscribe({
+      this.skillsService.addSkills(this.idPersona!, skill).subscribe({
         next: (Response: Skill) => {
           this.skill = Response;
           this.caller && this.caller.getSkills();
@@ -186,14 +187,14 @@ export class NgbdModalEditSkills {
 })
 export class NgbdModalDeleteSkill {
   public idSkill?: number;
-  public idPersona = 13;
+  private idPersona?: number;
   public caller?: SkillsComponent;
 
   constructor(public modal: NgbActiveModal, private skillsService: SkillsService) { }
 
   delete() {
     if (this.idSkill) {
-      this.skillsService.deleteSkill(this.idPersona, this.idSkill).subscribe({
+      this.skillsService.deleteSkill(this.idPersona!, this.idSkill).subscribe({
         next: () => {
           this.caller && this.caller.getSkills(); //CHANGE DETECTOR//
         },

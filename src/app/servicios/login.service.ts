@@ -13,9 +13,7 @@ export enum Roles {
   providedIn: 'root'
 })
 export class LoginService {
-
-  private apiServerUrl=environment.apiBaseUrl;
-  url: string = "http://localhost:8080/usuario/login";
+  url: string = `${environment.apiBaseUrl}/usuario/login`;
   private authenticated: boolean;
   private idPersona?: number;
   private role?: Roles;

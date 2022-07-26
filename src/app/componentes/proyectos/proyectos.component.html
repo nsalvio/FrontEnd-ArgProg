@@ -21,8 +21,8 @@
                 <div>
                 {{(getFormattedDate(proyecto.fechaDeRealizacion))}}
                 </div>
-                <div>
-                {{proyecto.link}}
+                <div *ngIf="proyecto.link">                
+                <a [href]="proyecto.link" target="_blank">Link</a>
                 </div>
             <p></p>
          </div>         
