@@ -2,11 +2,10 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { faLinkedin, faGithub } from '@fortawesome/free-brands-svg-icons';
+import { faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 import { Persona } from 'src/app/models/persona';
 import { LoginService } from 'src/app/servicios/login.service';
 import { PersonaService } from 'src/app/servicios/persona.service';
-import { PortfolioService } from 'src/app/servicios/portfolio.service';
-import { PortfolioComponent } from '../portfolio/portfolio.component';
 
 @Component({
   selector: 'app-encabezado',
@@ -16,6 +15,7 @@ import { PortfolioComponent } from '../portfolio/portfolio.component';
 export class EncabezadoComponent implements OnInit {
   faLinkedin = faLinkedin;
   faGithub = faGithub;
+  faLocation = faMapMarkerAlt;
 
   public persona : Persona | undefined;
   public editPersona : Persona | undefined;

@@ -31,6 +31,6 @@
             <div *ngIf="persona">
                 <h3 class="nombre">{{persona.nombre}} {{persona.apellido}}</h3>
                 <h4 class="titulo">{{persona.titulo}}</h4>
-                <a class="fas fa-map-marker-alt">{{persona.provinciaYPais}}</a>
+                <fa-icon [icon]="faLocation"></fa-icon>{{persona.provinciaYPais}}
             </div>
         </div>
